@@ -4,8 +4,8 @@ contents to the standard output. tstream is reincarnation of
 http://jordic.com/btcat/
 
 Usage:
-  slidelint TORRENT                   print list of TORRENT files
-  slidelint [options] TORRENT FILEID  streaming FILEID from TORRENT to stdout
+  slidelint TORRENT
+  slidelint [options] TORRENT FILEID
 
 Arguments:
   TORRENT  torrent URL or torrent file
@@ -32,12 +32,12 @@ def cli():
     torrent = args['TORRENT']
     fileid = args['FILEID'] and int(args['FILEID'])
     destination = args['--destination']
-    stream = args['--stream']
     with data_context_hanler(destination) as location_context:
         live_streamear = TorrentLiveStreamer(torrent, location_context)
         if fileid is not None:
-            status_stream = StatusNotifier()
-            stream = ConstructStream(stream)
-            return live_streamear.stream_file(fileid, stream, status_stream)
+            status_stream = StatusNotifier(live_streamear.torrent_handler.status)
+            status_stream.start()
+            stream = ConstructStream()
+            return live_streamear.stream_file(fileid, stream)
         for i in live_streamear.get_torrent_files_list():
             print "%5s: %25s, %.2fMB" % (i[0], i[1], i[2]/1048576)
