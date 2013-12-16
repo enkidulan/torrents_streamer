@@ -13,12 +13,11 @@ class BufferedPiecesGetter():
     """ Gets pieces in sequential order, caching non in sequence pieces"""
     cache = {}
 
-    def __init__(self, ses, torrent_handler, tfile, st_stream, timeout=0.1):
+    def __init__(self, ses, torrent_handler, tfile, timeout=0.1):
         self.ses = ses
         self.torrent_handler = torrent_handler
         self.tfile = tfile
         self.timeout = timeout
-        self.st_stream = st_stream
 
     def __call__(self, i):
         if i in self.cache:
@@ -26,14 +25,12 @@ class BufferedPiecesGetter():
         # waiting for piece to be downloaded
         while True:
             status = self.torrent_handler.status()
-            self.st_stream.update(status, self.tfile)
             if status.pieces[i] is True or not len(status.pieces):
                 break
             time.sleep(self.timeout)
         # reading target piece and return it
         self.torrent_handler.read_piece(i)  # triggering read_piece_alert
         while True:
-            self.st_stream.update(status, self.tfile)
             piece = self.ses.pop_alert()  # reading triggered piece
             if isinstance(piece, lt.read_piece_alert):
                 if piece.piece == i:
@@ -105,7 +102,7 @@ class TorrentLiveStreamer():
         for num, tfile in enumerate(self.tinfo.files()):
             yield num, tfile.path, tfile.size, tfile.offset
 
-    def stream_file(self, fileid, stream, status_stream):
+    def stream_file(self, fileid, stream):
         """ actual file streamer """
         tfile = self.tinfo.files()[fileid]
         piece_length = self.tinfo.piece_length()
@@ -122,16 +119,16 @@ class TorrentLiveStreamer():
         self.torrent_handler.set_sequential_download(True)
         # downloading pieces
         getpiece = BufferedPiecesGetter(
-            self.ses, self.torrent_handler, tfile, status_stream)
+            self.ses, self.torrent_handler, tfile)
         for piece_num in xrange(piece_start, piece_end + 1):
-            status_stream.update(self.torrent_handler.status(), tfile)
+            # status_stream.update(self.torrent_handler.status(), tfile)
             buf = getpiece(piece_num)
             if piece_num == piece_start:
                 buf = buf[piece_start_skip_bytes:]
             if piece_num == piece_end:
                 buf = buf[:piece_end_take_bytes]
             stream.write(buf)
-        status_stream.update(self.torrent_handler.status(), tfile)
+        # status_stream.update(self.torrent_handler.status(), tfile)
 
     def __del__(self):
         self.ses.remove_torrent(self.torrent_handler)
