@@ -23,12 +23,13 @@ class StatusNotifier(threading.Thread):
     state_str = ['queued', 'checking', 'downloading metadata',
                  'downloading', 'finished', 'seeding', 'allocating',
                  'checking fastresume']
-    out = '\r%.2f%% complete (down: %.1f kb/s up: %.1f kB/s peers: %d) %s %s'
+    out = '\r%.2f%% complete (down: %.1f kb/s up: %.1f kB/s peers: %d) %s'
 
     def __init__(self, status, tfile, timeout=0.5):
         super(StatusNotifier, self).__init__()
         self.status = status
         self.tfile = tfile
+        # self.file_name = str(self.tfile.path)
         self.timeout = timeout
         # makes a daemon of itself
         self.daemon = True
@@ -39,12 +40,12 @@ class StatusNotifier(threading.Thread):
         while True:
             status = self.status()
             output = self.out % (
+                # self.file_name,
                 status.progress * 100,
                 status.download_rate / 1000,
                 status.upload_rate / 1000,
                 status.num_peers,
-                self.state_str[status.state],
-                self.tfile.path)
+                self.state_str[status.state])
             # in case of using pipes the only way to display status
             # information is to use stderr
             sys.stderr.write(output)
