@@ -35,8 +35,9 @@ def cli():
     with data_context_hanler(destination) as location_context:
         live_streamear = TorrentLiveStreamer(torrent, location_context)
         if fileid is not None:
-            status_stream = StatusNotifier(live_streamear.torrent_handler.status)
-            status_stream.start()
+            status_stream = StatusNotifier(
+                live_streamear.torrent_handler.status,
+                live_streamear.tinfo.files()[fileid])
             stream = ConstructStream()
             return live_streamear.stream_file(fileid, stream)
         for i in live_streamear.get_torrent_files_list():

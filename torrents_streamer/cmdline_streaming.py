@@ -25,10 +25,15 @@ class StatusNotifier(threading.Thread):
                  'checking fastresume']
     out = '\r%.2f%% complete (down: %.1f kb/s up: %.1f kB/s peers: %d) %s %s'
 
-    def __init__(self, status):
+    def __init__(self, status, tfile, timeout=0.5):
         super(StatusNotifier, self).__init__()
         self.status = status
-        # self.tfile.path = ''
+        self.tfile = tfile
+        self.timeout = timeout
+        # makes a daemon of itself
+        self.daemon = True
+        # and starts itself
+        self.start()
 
     def run(self):
         while True:
@@ -39,9 +44,9 @@ class StatusNotifier(threading.Thread):
                 status.upload_rate / 1000,
                 status.num_peers,
                 self.state_str[status.state],
-                'file')# self.tfile.path)
+                self.tfile.path)
             # in case of using pipes the only way to display status
             # information is to use stderr
             sys.stderr.write(output)
             sys.stderr.flush()
-            time.sleep(0.5)
+            time.sleep(self.timeout)
