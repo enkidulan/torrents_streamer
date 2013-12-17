@@ -1,35 +1,37 @@
-Project Description
+Description
+===========
+
+torrents_streamer is a tool for streaming torrents content into
+standard output.
+
+How to use script?
 ===================
 
-I need a small python script that can efficiently read a file chunk by
-chunk and serve it over http, the file itself will be continuously added
-to(as it's been progressively downloaded) but we can provide the content
-length.
+To stream torrents use tstream script:
 
-Additional Project Description
-==============================
+::
 
-So far I have something like
+    $ bin/tstream
+    Usage:
+      slidelint TORRENT
+      slidelint [options] TORRENT FILEID
 
-from twisted.web.server import Site
-from twisted.web.resource import Resource
-from twisted.internet import reactor
-from twisted.web.static import File
+A TORRENT can be:
+    * a link to torrent file('http://.../data.torrent')
+    * torrent file path ('/home/.../data.torrent')
+    * a magnet-link stored into file ('/home/.../file_with_magnet_link')
 
-root = Resource()
-root.putChild("stream", File("/test/test.mkv"))
+To get list of all files in the torrent:
 
-factory = Site(root)
-reactor.listenTCP(8880, factory)
-reactor.run()
+::
 
-which works but in our case test.mkv is not a complete file,
-I have the final content length and I'd like to continuing serving the
-http stream and have a long timeout while to file is completed to
-continue serving.
+    bin/tstream movie.torrent
 
- i am using libtorrent python bindings to download a video sequentially
- and i'd like to stream it over http as it downloads
+To stream torrent file into stdout(into vlc sdtin):
+
+::
+
+    bin/tstream movie.torrent 0 | vlc -
 
 INSTALATION
 ===========
@@ -46,10 +48,3 @@ or build buildout:
 
     $ python bootstrap.py
     $ bin/buildout
-
-How to use script?
-===================
-
-::
-
-  $ bin/static_file_server /path/to/video.mkv -p 9000
