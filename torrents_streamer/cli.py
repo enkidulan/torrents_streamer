@@ -4,8 +4,8 @@ contents to the standard output. tstream is reincarnation of
 http://jordic.com/btcat/
 
 Usage:
-  slidelint TORRENT
-  slidelint [options] TORRENT FILEID
+  tstream TORRENT
+  tstream [options] TORRENT FILEID
 
 Arguments:
   TORRENT  torrent URL or torrent file

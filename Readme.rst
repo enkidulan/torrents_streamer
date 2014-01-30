@@ -13,8 +13,8 @@ To stream torrents use tstream script:
 
     $ bin/tstream
     Usage:
-      slidelint TORRENT
-      slidelint [options] TORRENT FILEID
+      tstream TORRENT
+      tstream [options] TORRENT FILEID
 
 A TORRENT can be:
     * a link to torrent file('http://.../data.torrent')
@@ -32,6 +32,16 @@ To stream torrent file into stdout(into vlc sdtin):
 ::
 
     bin/tstream movie.torrent 0 | vlc -
+
+Requirements
+============
+
+You need to have installed python binding for libtorrent.
+In Fedora you can install it with following command:
+
+::
+
+    # yum install rb_libtorrent-python
 
 INSTALATION
 ===========
