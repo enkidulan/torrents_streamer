@@ -33,8 +33,8 @@ To stream torrent file into stdout(into vlc sdtin):
 
     bin/tstream movie.torrent 0 | vlc -
 
-In case if you want keep that movie on your disk after watch it use tstream with -d
-option:
+In case if you want keep that movie on your disk after watch it use tstream
+with '-d' option:
 
 ::
 
